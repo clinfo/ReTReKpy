@@ -1,7 +1,6 @@
-# ReTReK: ReTrosynthesis planning application using Retrosynthesis Knowledge (Elix final deliverable)
-**(MANUSCRIPT IN PREPARATION)**  
-This package provides a data-driven computer-aided synthesis planning tool using retrosynthesis knowledge.
-In this package, the model of ReTReK was trained with US Patent dataset instead of Reaxys reaction dataset. 
+# ReTReK: ReTrosynthesis planning application using Retrosynthesis Knowledge (Python version)
+
+This package provides a data-driven computer-aided synthesis planning tool using retrosynthesis knowledge. In this package, the model of ReTReK was trained with US Patent dataset instead of Reaxys reaction dataset. Hence, please note that we cannot guarantee that the model gives the same synthetic routes in the manuscript.
 
 <div align="center">
   <img src="./images/ReTReK_summary.jpg">
@@ -41,7 +40,9 @@ mamba install -c conda-forge -c anaconda -c ljn917 -c pytorch rdkit rdchiral_cpp
 
 ## Example usage
 
-Note: The order of the knowledge arguments corresponds to that of the knowledge_weight arguments. 
+> **Note** 
+> The order of the knowledge arguments corresponds to that of the knowledge_weight arguments.
+
 ```bash
 # use all knowledge
 python run.py --config config/sample.json --knowledge all --knowledge_weights 1.0 1.0 1.0 1.0 1.0 1.0
@@ -49,6 +50,16 @@ python run.py --config config/sample.json --knowledge all --knowledge_weights 1.
 # use CDScore with a weight of 2.0
 python run.py --config config/sample.json --knowledge cdscore --knowledge_weights 2.0 0.0 0.0 0.0 0.0 0.0
 ```
+
+If you want to try your own molecule, prepare the molecule as MDL MOLfile format and replace data/sample.mol with the prepared file.
+
+## Optional arguments
+
+- `--sel_const`: constant value for selection (default value is set to 3). 
+- `--expansion_num`: number of reaction templates used in the expansion step (default value is set to 50). 
+- `--starting_material`: path to SMILES format file containing starting materials. 
+- `--search_count`: the maximum number of iterations of MCTS (default value is set to 100).
+
 
 ## Terms
 ### Convergent Disconnection Score (CDScore)
@@ -71,6 +82,24 @@ TemplateScore allows to prioritize some reaction templates, it should be given a
 `template: template_score (between 0 and 1)`. Templates not included will have a default score of 0.
 
 ## Contact
-Shoichi Ishida: ishida.sho.nm@yokohama-cu.ac.jp
+- Shoichi Ishida: ishida.sho.nm@yokohama-cu.ac.jp
+- Ryosuke Kojima: kojima.ryosuke.8e@kyoto-u.ac.jp 
 
 ## Reference
+
+```
+@article{Ishida2022,
+  doi = {10.1021/acs.jcim.1c01074},
+  url = {https://doi.org/10.1021/acs.jcim.1c01074},
+  year = {2022},
+  month = mar,
+  publisher = {American Chemical Society ({ACS})},
+  volume = {62},
+  number = {6},
+  pages = {1357--1367},
+  author = {Shoichi Ishida and Kei Terayama and Ryosuke Kojima and Kiyosei Takasu and Yasushi Okuno},
+  title = {{AI}-Driven Synthetic Route Design Incorporated with Retrosynthesis Knowledge},
+  journal = {Journal of Chemical Information and Modeling}
+}
+```
+This application is developed as part of a [kGCN](https://github.com/clinfo/kGCN) project. 
