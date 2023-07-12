@@ -72,8 +72,11 @@ For the same purpose of CDScore, how many available substances generated in a re
 A ring construction strategy is preferred if a target compounds has complex ring structures.
  
 ### Selective Transformation Score (STScore)
-A synthetic reaction with few by-products is generally preferred in terms of its yield.
+A synthetic reaction with few by-products is generally preferred in terms of its yield.  
 
+------
+> **Note**
+> For now, the scores below are only for internal use only
 ### Intermediate Score (IntermediateScore)
 IntermediateScore favors states that include molecules from a user defined list of intermediate compounds.
 
