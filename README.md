@@ -1,4 +1,4 @@
-# ReTReK: ReTrosynthesis planning application using Retrosynthesis Knowledge (Python version)
+# ReTReK: ReTrosynthesis planning application using Retrosynthesis Knowledge (pure Python version)
 
 This package provides a data-driven computer-aided synthesis planning tool using retrosynthesis knowledge. In this package, the model of ReTReK was trained with US Patent dataset instead of Reaxys reaction dataset. Hence, please note that we cannot guarantee that the model gives the same synthetic routes in the manuscript.
 
