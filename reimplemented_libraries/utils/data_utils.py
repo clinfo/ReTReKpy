@@ -8,7 +8,7 @@ class DataUtils:
     """
 
     @staticmethod
-    def read_dataset(dataset_file_path: str, dataset_file_extension: str, separator="\n",
+    def read_dataset(dataset_file_path: str, dataset_file_extension: str, separator="\t",
                      header=0, verbose=False) -> pd.DataFrame:
         """
         Description:

@@ -4,6 +4,9 @@ import sys
 from keras import models
 from rdkit import Chem
 import tensorflow as tf
+if tf.__version__.split(".")[0]=='2':
+    import tensorflow.compat.v1 as tf
+    tf.disable_v2_behavior()
 import numpy as np
 import torch
 
