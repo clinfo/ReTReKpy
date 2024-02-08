@@ -29,7 +29,7 @@ class CxnUtils:
         self.rollout_list = self. __get_reaction_list(reaction_rule_list_path)
         self.max_products = max_products
     
-    def __get_reaction_list(self, reaction_rule_list_path: str, file_ext=".sma", file_sep="\n", header=None) -> List[str]:
+    def __get_reaction_list(self, reaction_rule_list_path: str, file_ext=".sma", file_sep="\t", header=None) -> List[str]:
         """ 
         Description:
             Read the file containing the list of available reaction rules in SMARTS string format.
