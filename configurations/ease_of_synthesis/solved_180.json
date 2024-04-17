@@ -1,0 +1,95 @@
+{
+    "model": {
+        "type": "graph_neural",
+        "in_features": 45,
+        "out_features": 1,
+        "hidden_features": 192,
+        "edge_features": 12,
+        "dropout": 0.1,
+        "layer_type": "torch_geometric.nn.LEConv",
+        "layers_count": 5,
+        "molecule_features": 0,
+        "is_residual": 1,
+        "norm_layer": "kmol.model.layers.BatchNorm",
+        "read_out": "sum"
+    },
+
+    "loader": {
+        "input_path": "/nasa/shared_homes/haris/development/riken_retrek_improvement/deliverables/ease_of_synthesis/data/processed/chembl_eval_27000_results_180.csv",
+        "smiles_column": "smiles",
+        "target_columns": ["solved"],
+        "use_cache": false
+    },
+
+    "splitter": {
+        "type": "random",
+        "seed": 42,
+        "splits": {
+            "train": 0.8,
+            "validation": 0.1,
+            "test": 0.1
+        }
+    },
+
+    "featurizers": [],
+
+    "transformers": [],
+
+    "optimizer": {
+        "type": "torch.optim.AdamW",
+        "lr": 0.00097,
+        "weight_decay": 1e-05
+    },
+
+    "criterion": {
+        "type": "kmol.model.criterions.MaskedLoss",
+        "loss": {
+            "type": "torch.nn.BCEWithLogitsLoss"
+        }
+    },
+
+    "scheduler": {
+        "type": "torch.optim.lr_scheduler.OneCycleLR",
+        "pct_start": 0.3,
+        "div_factor": 25,
+        "final_div_factor": 1000
+    },
+
+    "is_finetuning": false,
+
+    "output_path": "/nasa/shared_homes/haris/development/riken_retrek_improvement/deliverables/ease_of_synthesis/model",
+
+    "checkpoint_path": "/nasa/shared_homes/haris/development/riken_retrek_improvement/deliverables/ease_of_synthesis/model/solved_180/best_ckpt.pt",
+
+    "threshold": 0.5,
+
+    "cross_validation_folds": 5,
+
+    "train_metrics": ["roc_auc", "accuracy", "pr_auc"],
+
+    "test_metrics": ["roc_auc", "accuracy", "pr_auc"],
+
+    "epochs": 100,
+
+    "batch_size": 128,
+
+    "use_cuda": true,
+
+    "enabled_gpus": [0],
+
+    "cache_location": "/nasa/shared_homes/haris/development/riken_retrek_improvement/deliverables/ease_of_synthesis/data/cache",
+
+    "clear_cache": false,
+
+    "log_level": "info",
+
+    "log_format": "",
+
+    "log_frequency": 5,
+
+    "observers": {},
+
+    "target_metric": "roc_auc",
+
+    "optuna_trials": 1000
+}
