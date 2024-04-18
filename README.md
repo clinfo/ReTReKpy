@@ -1,4 +1,4 @@
-# ReTReK: Retrosynthesis Planning Application using Retrosynthesis Knowledge
+# ReTReK: Retrosynthesis Planning Application using Retrosynthesis Knowledge (Python)
 
 Welcome to the **ReTReKpy** project !!!
 
