@@ -1,4 +1,4 @@
-""" The ``scripts.single_step_retrosynthesis`` directory ``infer`` script. """
+""" The ``scripts.single_step_retrosynthesis`` directory ``inference`` script. """
 
 from retrekpy.kmol_patch.data.loaders import PatchedListLoader
 
