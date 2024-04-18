@@ -4,8 +4,8 @@ Welcome to the **ReTReKpy** project !!!
 
 ## Environment
 This version of the ReTReKpy repository is utilizing the [***kMoL***](https://github.com/elix-tech/kmol) library. The
-execution environment can be established in two stages. The first stage is the set-up of the environment using
-[***conda***](https://docs.conda.io/en/latest) and [***pip***](https://pip.pypa.io/en/stable) as follows:
+execution environment can be established using [***conda***](https://docs.conda.io/en/latest) and
+[***pip***](https://pip.pypa.io/en/stable) as follows:
 
 ```bash
 git clone https://github.com/elix-tech/kmol.git
@@ -19,22 +19,34 @@ conda activate kmol
 conda install -c conda-forge -c ljn917 molvs rdchiral_cpp -y
 
 pip install epam.indigo quantulum3
+
+cd /.../ReTReKpy
+
+pip install --no-build-isolation -e . --user
 ```
 
 **NOTE:** If [this issue](https://github.com/pytorch/pytorch/issues/123097) is encountered during the set-up of the
 environment, please add `- mkl=2024.0` at the end of the `/.../kmol/environment.yml` file before running the
 `make create-env` command.
 
-The second stage is the local installation of the [***retrekpy***](/retrekpy) package:
+### Docker
+The execution environment can be established using [***Docker***](https://www.docker.com) as follows:
 
 ```bash
+git clone https://github.com/elix-tech/kmol.git
+
+cd kmol
+
+make build-docker
+
 cd /.../ReTReKpy
 
-pip install --no-build-isolation -e . --user
+docker build . -t retrekpy
+
+alias retrekpy_docker='docker run --rm -it --gpus=all --ipc=host --volume="$(pwd)"/:/opt/elix/kmol/ReTReKpy/ retrekpy'
 ```
 
-### Docker
-To be written.
+Now, the `python` command can be replaced with the `retrekpy_docker` command.
 
 ## Scripts
 
