@@ -8,6 +8,7 @@ filterwarnings(
 )
 
 import logging
+import torch
 
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
@@ -15,14 +16,21 @@ from json import dump, load
 from pathlib import Path
 from random import seed
 from time import time
-from typing import Union
+from typing import Optional, Union
 
 from rdkit.Chem import MolFromMolFile
 from rdkit.RDLogger import DisableLog
 
+from kmol.core.config import Config
+
+from retrekpy.in_scope_filter.in_scope_filter_network import InScopeFilterNetwork
+
 from retrekpy.mcts.chemistry_helper import ChemistryHelper
 from retrekpy.mcts import MCTS
 from retrekpy.mcts.utilities import ReactionUtilities
+
+from retrekpy.single_step_retrosynthesis.model.architectures import CustomizedGraphConvolutionalNetwork
+from retrekpy.single_step_retrosynthesis.model.executors import CustomizedPredictor
 
 
 def get_script_arguments(
@@ -39,8 +47,7 @@ def get_script_arguments(
         "-t",
         "--target",
         type=str,
-        default="/nasa/shared_homes/haris/development/riken_retrek_improvement/deliverables/mcts/data/original/sample.mol",
-        required=False,
+        required=True,
         help="Path to the target molecule file."
     )
 
@@ -48,8 +55,7 @@ def get_script_arguments(
         "-r",
         "--save_result_dir",
         type=str,
-        default="/nasa/shared_homes/haris/development/riken_retrek_improvement/ReTReKpy/result",
-        required=False,
+        required=True,
         help="Path to the result directory."
     )
 
@@ -57,8 +63,7 @@ def get_script_arguments(
         "-c",
         "--config",
         type=str,
-        default="/nasa/shared_homes/haris/development/riken_retrek_improvement/ReTReKpy/configurations/mcts/run.json",
-        required=False,
+        required=True,
         help="Path to the config file."
     )
 
@@ -141,40 +146,37 @@ def get_script_logger(
     return logger
 
 
-def load_model_haris():
-    """ Text goes here. """
-
-    from kmol.core.config import Config
-
-    from retrekpy.single_step_retrosynthesis.model.architectures import CustomizedGraphConvolutionalNetwork
-    from retrekpy.single_step_retrosynthesis.model.executors import CustomizedPredictor
+def load_model(
+        configuration_path: str
+) -> CustomizedPredictor:
+    """ The 'load_model' function. """
 
     configuration = Config.from_file(
-        file_path="../../configurations/single_step_retrosynthesis/inference_configuration.json",
+        file_path=configuration_path,
         job_command="infer"
     )
 
     return CustomizedPredictor(configuration)
 
 
-def load_in_scope_model_haris(checkpoint_file_path):
-    """ Text goes here. """
-
-    import torch
-    from retrekpy.in_scope_filter.in_scope_filter_network import InScopeFilterNetwork
+def load_in_scope_model(
+        checkpoint_file_path: str
+) -> Optional[InScopeFilterNetwork]:
+    """ The 'load_in_scope_model' function. """
 
     if checkpoint_file_path is not None:
         model = InScopeFilterNetwork()
         model.load_state_dict(torch.load(checkpoint_file_path, map_location=torch.device("cpu")))
         model.eval()
+
         return model
+
     else:
         return None
 
 
 if __name__ == "__main__":
     # ------------------------------------------------------------------------------------------------------------------
-    #  Initialize the script.
     # ------------------------------------------------------------------------------------------------------------------
 
     script_arguments = get_script_arguments()
@@ -221,7 +223,6 @@ if __name__ == "__main__":
     )
 
     # ------------------------------------------------------------------------------------------------------------------
-    #  TBW.
     # ------------------------------------------------------------------------------------------------------------------
 
     if script_arguments.random_seed is not None:
@@ -232,6 +233,9 @@ if __name__ == "__main__":
     )
 
     try:
+        # --------------------------------------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
+
         expansion_rules = ReactionUtilities.get_reactions(
             rxn_rule_path=script_configuration["expansion_rules"],
             save_dir=script_configuration["save_result_dir"]
@@ -256,11 +260,15 @@ if __name__ == "__main__":
             intermediate_materials = set()
 
         # --------------------------------------------------------------------------------------------------------------
-        #  TBW.
         # --------------------------------------------------------------------------------------------------------------
 
-        expansion_model = load_model_haris()
-        rollout_model = load_model_haris()
+        expansion_model = load_model(
+            configuration_path=script_configuration["expansion_model"]
+        )
+
+        rollout_model = load_model(
+            configuration_path=script_configuration["rollout_model"]
+        )
 
         if script_configuration["template_scores"]:
             with open(script_configuration["template_scores"]) as file_handle:
@@ -269,107 +277,94 @@ if __name__ == "__main__":
         else:
             template_scores = set()
 
-        in_scope_filter_model = load_in_scope_model_haris(script_configuration["in_scope_model"])
+        in_scope_filter_model = load_in_scope_model(
+            checkpoint_file_path=script_configuration["in_scope_model"]
+        )
 
         # --------------------------------------------------------------------------------------------------------------
-        #  TBW.
         # --------------------------------------------------------------------------------------------------------------
 
-        import os
+        target_mol = MolFromMolFile(script_arguments.target)
 
-        results = list()
+        if target_mol is None:
+            raise ValueError("Can't read the input molecule file. Please check it.")
 
-        for file_name in os.listdir("/nasa/shared_homes/haris/development/riken_retrek_improvement/test/1000_eval_V2"):
-            if file_name.endswith(".mol") and int(file_name.split(".")[0].split("_")[1]) < 10:
-                script_arguments.target = "/nasa/shared_homes/haris/development/riken_retrek_improvement/test/1000_eval_V2/{0:s}".format(file_name)
+        mcts = MCTS(
+            target_mol=target_mol,
+            max_atom_num=script_configuration["max_atom_num"],
+            expansion_rules=expansion_rules,
+            rollout_rules=rollout_rules,
+            starting_materials=starting_materials,
+            intermediate_materials=intermediate_materials,
+            template_scores=template_scores,
+            knowledge=script_configuration["knowledge"],
+            knowledge_weights=script_configuration["knowledge_weights"],
+            save_tree=script_configuration["save_tree"],
+            search_count=script_configuration["search_count"],
+            selection_constant=script_configuration["selection_constant"],
+            save_result_dir=script_configuration["save_result_dir"],
+            cum_prob_mod=script_configuration["cum_prob_mod"],
+            cum_prob_thresh=script_configuration["cum_prob_thresh"],
+            expansion_num=script_configuration["expansion_num"],
+            rollout_depth=script_configuration["rollout_depth"]
+        )
 
-                target_mol = MolFromMolFile(script_arguments.target)
+        # --------------------------------------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
 
-                if target_mol is None:
-                    raise ValueError("Can't read the input molecule file. Please check it.")
+        script_logger.info(f"[INFO] knowledge type: {script_configuration['knowledge']}")
+        script_logger.info("[INFO] start search")
 
-                mcts = MCTS(
-                    target_mol=target_mol,
-                    max_atom_num=script_configuration["max_atom_num"],
-                    expansion_rules=expansion_rules,
-                    rollout_rules=rollout_rules,
-                    starting_materials=starting_materials,
-                    intermediate_materials=intermediate_materials,
-                    template_scores=template_scores,
-                    knowledge=script_configuration["knowledge"],
-                    knowledge_weights=script_configuration["knowledge_weights"],
-                    save_tree=script_configuration["save_tree"],
-                    search_count=script_configuration["search_count"],
-                    selection_constant=script_configuration["selection_constant"],
-                    save_result_dir=script_configuration["save_result_dir"],
-                    cum_prob_mod=script_configuration["cum_prob_mod"],
-                    cum_prob_thresh=script_configuration["cum_prob_thresh"],
-                    expansion_num=script_configuration["expansion_num"],
-                    rollout_depth=script_configuration["rollout_depth"]
-                )
+        start = time()
 
-                script_logger.info(f"[INFO] knowledge type: {script_configuration['knowledge']}")
-                script_logger.info("[INFO] start search")
+        leaf_node, is_proven = mcts.search(
+            expansion_model=expansion_model,
+            rollout_model=rollout_model,
+            in_scope_model=in_scope_filter_model,
+            logger=script_logger,
+            chemistry_helper=chemistry_helper,
+            time_limit=script_configuration["time_limit"]
+        )
 
-                start = time()
+        elapsed_time = time() - start
 
-                leaf_node, is_proven = mcts.search(
-                    expansion_model=expansion_model,
-                    rollout_model=rollout_model,
-                    in_scope_model=in_scope_filter_model,
-                    logger=script_logger,
-                    chemistry_helper=chemistry_helper,
-                    time_limit=script_configuration["time_limit"]
-                )
+        script_logger.info(f"[INFO] done in {elapsed_time:5f} s")
 
-                elapsed_time = time() - start
+        # --------------------------------------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
 
-                script_logger.info(f"[INFO] done in {elapsed_time:5f} s")
+        with open(Path(script_configuration["save_result_dir"], "time.txt"), "w") as file_handle:
+            file_handle.write(f"{elapsed_time}")
 
-                with open(Path(script_configuration["save_result_dir"], "time.txt"), "w") as file_handle:
-                    file_handle.write(f"{elapsed_time}")
+        nodes = list()
 
-                nodes = list()
+        if leaf_node is None:
+            Path(script_configuration["save_result_dir"], "not_proven").touch()
 
-                if leaf_node is None:
-                    Path(script_configuration["save_result_dir"], "not_proven").touch()
+            raise Exception("Can't apply any predicted reaction templates to the target compound.")
 
-                    raise Exception("Can't apply any predicted reaction templates to the target compound.")
+        while leaf_node.parent_node is not None:
+            nodes.append(leaf_node)
+            leaf_node = leaf_node.parent_node
 
-                while leaf_node.parent_node is not None:
-                    nodes.append(leaf_node)
-                    leaf_node = leaf_node.parent_node
+        else:
+            nodes.append(leaf_node)
 
-                else:
-                    nodes.append(leaf_node)
+        MCTS.print_route(
+            nodes=nodes,
+            is_proven=is_proven,
+            logger=script_logger
+        )
 
-                MCTS.print_route(
-                    nodes=nodes,
-                    is_proven=is_proven,
-                    logger=script_logger
-                )
+        MCTS.save_route(
+            nodes=nodes,
+            save_dir=script_configuration["save_result_dir"],
+            is_proven=is_proven,
+            ws=script_configuration["knowledge_weights"]
+        )
 
-                MCTS.save_route(
-                    nodes=nodes,
-                    save_dir=script_configuration["save_result_dir"],
-                    is_proven=is_proven,
-                    ws=script_configuration["knowledge_weights"]
-                )
-
-                if is_proven:
-                    results.append(
-                        1
-                    )
-
-                else:
-                    results.append(
-                        0
-                    )
-
-        from collections import Counter
-
-        print(results)
-        print(Counter(results))
+        # --------------------------------------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
 
     except Exception as exception_handle:
         script_logger.exception(

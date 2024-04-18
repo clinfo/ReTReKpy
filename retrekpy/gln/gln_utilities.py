@@ -19,7 +19,7 @@ class GLNUtilities:
 
     @staticmethod
     def get_rxn_smiles(prod, reactants):
-        """ The original 'get_rxn_smiles' function. """
+        """ The 'get_rxn_smiles' function. """
 
         prod_smi = MolToSmiles(prod, True)
 
@@ -49,7 +49,7 @@ class GLNUtilities:
 
     @staticmethod
     def get_writer(fname, header):
-        """ The original 'get_writer' function. """
+        """ The 'get_writer' function. """
 
         fout = open(fname, 'w')
         writer = csv.writer(fout)
@@ -59,7 +59,7 @@ class GLNUtilities:
 
     @staticmethod
     def get_tpl(task):
-        """ The original 'get_tpl' function. """
+        """ The 'get_tpl' function. """
 
         idx, row_idx, rxn_smiles = task
         react, reagent, prod = rxn_smiles.split('>')
@@ -74,7 +74,7 @@ class GLNUtilities:
         return idx, template
 
     @staticmethod
-    def gln_clean_uspto(uspto_rsmi_file_path: str, save_folder_path: str):
+    def gln_clean_uspto(uspto_rsmi_file_path, save_folder_path):
         """ The original 'gln_clean_uspto' function. """
 
         uspto_version = "grants" if "1976" in uspto_rsmi_file_path else "applications"
@@ -191,7 +191,7 @@ class GLNUtilities:
                     ])
 
     @staticmethod
-    def gln_build_raw_template(uspto_rsmi_file_path: str, save_folder_path: str, num_cpu_cores: int):
+    def gln_build_raw_template(uspto_rsmi_file_path, save_folder_path, num_cpu_cores):
         """ The original 'gln_build_raw_template' function. """
 
         uspto_version = "grants" if "1976" in uspto_rsmi_file_path else "applications"

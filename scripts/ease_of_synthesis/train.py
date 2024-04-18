@@ -34,8 +34,7 @@ def get_script_arguments(
         "-c",
         "--config",
         type=str,
-        default="/nasa/shared_homes/haris/development/riken_retrek_improvement/ReTReKpy/configurations/ease_of_synthesis/multitask_600.json",
-        required=False
+        required=True,
     )
 
     argument_parser.add_argument(
@@ -46,7 +45,7 @@ def get_script_arguments(
             "eval",
             "bayesian_opt",
         ],
-        default="eval",
+        default="train",
         required=False
     )
 

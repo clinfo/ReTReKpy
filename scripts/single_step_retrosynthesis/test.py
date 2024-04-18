@@ -32,8 +32,7 @@ def get_script_arguments(
         "-c",
         "--configuration_file_path",
         type=str,
-        default="../../configurations/single_step_retrosynthesis/test_configuration.json",
-        required=False,
+        required=True,
         help="The path to the configuration '*.json' file."
     )
 

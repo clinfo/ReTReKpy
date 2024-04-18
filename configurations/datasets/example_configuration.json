@@ -15,7 +15,7 @@
         "mapped_smiles_column": "mapped_rxn_smiles",
         "rxn_template_smarts_column": "rxn_template_smarts",
 
-        "salts_file_path": "/.../data/chemistry/chem_axon_salts.txt",
+        "salts_file_path": "/.../chem_axon_salts.txt",
 
         "atom_mapping_timeout": 10000,
         "handle_existing_mapping": "discard",
@@ -29,7 +29,7 @@
 
     "data_pre_processing_config":
     {
-        "input_file_path": "/.../data.csv",
+        "input_file_path": "/.../input_file_path.csv",
         "input_file_extension": ".csv",
         "input_file_separator": ",",
         "id_column": "zinc_id",
@@ -42,8 +42,8 @@
         "processed_smiles_column": "processed_smiles",
         "sa_score_column": "sa_score",
 
-        "salts_file_path": "/.../data/chemistry/all_salts.txt",
-        "unwanted_elements_file_path": "/.../data/chemistry/all_unwanted_elements.sma",
+        "salts_file_path": "/.../all_salts.txt",
+        "unwanted_elements_file_path": "/.../all_unwanted_elements.sma",
 
         "use_multiprocessing": true
     }

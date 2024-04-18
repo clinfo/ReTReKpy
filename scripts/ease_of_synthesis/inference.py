@@ -44,7 +44,7 @@ def get_script_arguments(
         "-r",
         "--regression-model",
         type=str,
-        required=False,
+        required=True,
         help="Path to config file of regression model."
     )
 
@@ -60,7 +60,7 @@ def get_script_arguments(
         "-s",
         "--save-path",
         type=str,
-        required=True
+        required=True,
     )
 
     argument_parser.add_argument(
@@ -72,7 +72,8 @@ def get_script_arguments(
             "ecfp",
             "mordred"
         ],
-        default="graph"
+        default="graph",
+        required=False
     )
 
     return argument_parser.parse_args()

@@ -48,8 +48,7 @@ def get_script_arguments(
         "-t",
         "--targets",
         type=str,
-        default="/nasa/shared_homes/haris/development/riken_retrek_improvement/deliverables/mcts/data/original/chembl_eval_27000",
-        required=False,
+        required=True,
         help="Path to the target molecule file."
     )
 
@@ -57,8 +56,7 @@ def get_script_arguments(
         "-r",
         "--save_result_dir",
         type=str,
-        default="/nasa/shared_homes/haris/development/riken_retrek_improvement/deliverables/mcts/data/processed/chembl_eval_27000_results",
-        required=False,
+        required=True,
         help="Path to the result directory."
     )
 
@@ -66,17 +64,7 @@ def get_script_arguments(
         "-c",
         "--config",
         type=str,
-        default="/nasa/shared_homes/haris/development/riken_retrek_improvement/ReTReKpy/configurations/mcts/run.json",
-        required=False,
-        help="Path to the config file."
-    )
-
-    argument_parser.add_argument(
-        "-mc",
-        "--model_config",
-        type=str,
-        default="/nasa/shared_homes/haris/development/riken_retrek_improvement/ReTReKpy/configurations/single_step_retrosynthesis/inference_configuration.json",
-        required=False,
+        required=True,
         help="Path to the config file."
     )
 
@@ -215,16 +203,10 @@ if __name__ == "__main__":
         save_dir=script_arguments.save_result_dir
     )
 
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-
     rollout_rules = ReactionUtilities.get_reactions(
         rxn_rule_path=script_configuration["rollout_rules"],
         save_dir=script_arguments.save_result_dir
     )
-
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
 
     with open(script_configuration["starting_material"]) as file_handle:
         starting_materials = set([line.strip() for line in file_handle.readlines()])
@@ -232,18 +214,12 @@ if __name__ == "__main__":
         if all([len(starting_material) == 27 for starting_material in starting_materials]):
             starting_materials.add("inchi")
 
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
-
     if script_configuration["intermediate_material"] is not None:
         with open(script_configuration["intermediate_material"]) as file_handle:
             intermediate_materials = set([line.strip() for line in file_handle.readlines()])
 
     else:
         intermediate_materials = set()
-
-    # ------------------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------------------------------
 
     if script_configuration["template_scores"]:
         with open(script_configuration["template_scores"]) as file_handle:
@@ -256,11 +232,11 @@ if __name__ == "__main__":
     # ------------------------------------------------------------------------------------------------------------------
 
     expansion_model = load_model(
-        configuration_path=script_arguments.model_config
+        configuration_path=script_configuration["expansion_model"]
     )
 
     rollout_model = load_model(
-        configuration_path=script_arguments.model_config
+        configuration_path=script_configuration["rollout_model"]
     )
 
     in_scope_filter_model = load_in_scope_model(
@@ -270,15 +246,8 @@ if __name__ == "__main__":
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
 
-    finished_indices = set()
-
-    for dir_name in os.listdir("/nasa/shared_homes/haris/development/riken_retrek_improvement/deliverables/mcts/data/processed/chembl_eval_27000_results"):
-        finished_indices.add(
-            int(dir_name.split("_")[1])
-        )
-
     for file_name in os.listdir(script_arguments.targets):
-        if file_name.endswith(".mol") and int(file_name.split(".")[0].split("_")[1]) not in finished_indices:
+        if file_name.endswith(".mol"):
             # ----------------------------------------------------------------------------------------------------------
             # ----------------------------------------------------------------------------------------------------------
 
@@ -347,6 +316,9 @@ if __name__ == "__main__":
                     rollout_depth=script_configuration["rollout_depth"]
                 )
 
+                # ------------------------------------------------------------------------------------------------------
+                # ------------------------------------------------------------------------------------------------------
+
                 script_logger.info(f"[INFO] knowledge type: {script_configuration['knowledge']}")
                 script_logger.info("[INFO] start search")
 
@@ -394,6 +366,9 @@ if __name__ == "__main__":
                     is_proven=is_proven,
                     ws=script_configuration["knowledge_weights"]
                 )
+
+                # ------------------------------------------------------------------------------------------------------
+                # ------------------------------------------------------------------------------------------------------
 
             except Exception as exception_handle:
                 script_logger.exception(
