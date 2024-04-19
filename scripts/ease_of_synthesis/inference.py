@@ -34,7 +34,7 @@ def get_script_arguments(
 
     argument_parser.add_argument(
         "-c",
-        "--classification-model",
+        "--classification_model",
         type=str,
         required=True,
         help="Path config file of classification model."
@@ -42,7 +42,7 @@ def get_script_arguments(
 
     argument_parser.add_argument(
         "-r",
-        "--regression-model",
+        "--regression_model",
         type=str,
         required=True,
         help="Path to config file of regression model."
@@ -58,7 +58,7 @@ def get_script_arguments(
 
     argument_parser.add_argument(
         "-s",
-        "--save-path",
+        "--save_path",
         type=str,
         required=True,
     )

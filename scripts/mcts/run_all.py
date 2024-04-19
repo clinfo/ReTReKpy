@@ -49,7 +49,7 @@ def get_script_arguments(
         "--targets",
         type=str,
         required=True,
-        help="Path to the target molecule file."
+        help="Path to the target molecule directory."
     )
 
     argument_parser.add_argument(
