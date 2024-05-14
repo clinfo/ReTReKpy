@@ -1,0 +1,21 @@
+{
+  "max_atom_num": 50,
+  "search_count": 1000,
+  "rollout_depth": 5,
+  "expansion_model": "/.../expansion_inference_configuration.json",
+  "expansion_rules": "/.../chemical_reaction_templates.sma",
+  "rollout_model": "/.../rollout_inference_configuration.json",
+  "rollout_rules": "/.../chemical_reaction_templates.sma",
+  "in_scope_model": null,
+  "starting_material": "/.../starting_materials.smi",
+  "intermediate_material": null,
+  "template_scores": null,
+  "knowledge": "cdscore",
+  "knowledge_weights": [5.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+  "save_tree": true,
+  "selection_constant": 10,
+  "expansion_num": 500,
+  "time_limit": 600,
+  "cum_prob_mod": false,
+  "cum_prob_thresh": 0.955
+}

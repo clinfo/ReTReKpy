@@ -1,0 +1,88 @@
+{
+  "model": {
+    "type": "customized_graph_convolutional",
+    "in_features": 45,
+    "hidden_features": 512,
+    "graph_dense_features": 2048,
+    "mlp_features": 2048,
+    "out_features": 248489,
+    "layer_type": "torch_geometric.nn.GCNConv",
+    "layers_count": 3,
+    "dropout": 0.1,
+    "norm_layer": "kmol.model.layers.BatchNorm",
+    "is_residual": 0,
+    "read_out": "sum"
+  },
+
+  "loader": {
+    "type": "csv",
+    "input_path": "/.../training_and_validation_dataset_split_file.csv",
+    "input_column_names": ["main_product"],
+    "target_column_names": ["class"]
+  },
+
+  "featurizers": [{
+    "type": "graph",
+    "inputs": ["main_product"],
+    "outputs": ["graph"],
+    "descriptor_calculator": {
+      "type": "rdkit"
+    }
+  }],
+
+  "transformers": [],
+
+  "splitter": {
+    "type": "index",
+    "splits": {
+      "train": 0.8,
+      "validation": 0.2
+    }
+  },
+
+  "criterion": {
+    "type": "torch.nn.CrossEntropyLoss"
+  },
+
+  "optimizer": {
+    "type": "torch.optim.AdamW",
+    "lr": 8e-05,
+    "weight_decay": 2e-05
+  },
+
+  "scheduler": {
+    "type": "torch.optim.lr_scheduler.OneCycleLR",
+    "max_lr": 0.01,
+    "epochs": 200,
+    "pct_start": 0.3,
+    "div_factor": 25,
+    "final_div_factor": 1000
+  },
+
+  "featurization_jobs": 40,
+
+  "is_stepwise_scheduler": false,
+
+  "is_finetuning": false,
+
+  "output_path": "/.../output_directory",
+
+  "checkpoint_path": null,
+  "overwrite_checkpoint": true,
+
+  "epochs": 100,
+
+  "batch_size": 128,
+
+  "use_cuda": true,
+  "enabled_gpus": [0],
+
+  "cache_location": "/.../cache_directory",
+  "clear_cache": false,
+
+  "target_metric": "top_1_accuracy",
+
+  "log_level": "debug",
+  "log_format": "",
+  "log_frequency": 1
+}
