@@ -44,7 +44,7 @@ def get_script_arguments(
         "-r",
         "--regression_model",
         type=str,
-        required=True,
+        required=False,
         help="Path to config file of regression model."
     )
 

@@ -1,0 +1,92 @@
+augmentations: []
+batch_size: 128
+cache_location: ./scripts/ease_of_synthesis/cache
+checkpoint_path: ./checkpoint/solved_600/best_ckpt.pt
+clear_cache: false
+collater:
+    type: general
+criterion:
+    loss:
+        type: torch.nn.BCEWithLogitsLoss
+    type: kmol.model.criterions.MaskedLoss
+cross_validation_folds: 5
+differential_privacy:
+    enabled: false
+drop_last_batch: false
+enabled_gpus:
+- 3
+epochs: 100
+featurization_jobs: 4
+featurizers: []
+inference_mode: null
+is_finetuning: false
+is_stepwise_scheduler: true
+loader:
+    input_path: /path/to/input
+    smiles_column: smiles
+    target_columns:
+    - solved
+    use_cache: false
+log_format: ''
+log_frequency: 5
+log_level: info
+mc_dropout_iterations: 5
+mc_dropout_probability: 0.1
+model:
+    dropout: 0.3
+    edge_features: 12
+    hidden_features: 480
+    in_features: 45
+    is_residual: 0
+    layer_type: torch_geometric.nn.LEConv
+    layers_count: 8
+    molecule_features: 0
+    norm_layer: kmol.model.layers.BatchNorm
+    out_features: 1
+    read_out: sum
+    type: graph_neural
+num_workers: 0
+observers: {}
+optimizer:
+    lr: 0.00069
+    type: torch.optim.AdamW
+    weight_decay: 1.0e-05
+optuna_init: null
+optuna_trials: 1000
+output_path: ./scripts/ease_of_synthesis/cache
+overwrite_checkpoint: false
+prediction_additional_columns: []
+preprocessor:
+    type: cache
+probe_layer: null
+scheduler:
+    div_factor: 25
+    final_div_factor: 1000
+    pct_start: 0.3
+    type: torch.optim.lr_scheduler.OneCycleLR
+seed: 42
+splitter:
+    seed: 42
+    splits:
+        test: 0.1
+        train: 0.8
+        validation: 0.1
+    type: random
+static_augmentations: []
+subset: null
+target_metric: roc_auc
+test_metrics:
+- roc_auc
+- accuracy
+- pr_auc
+test_split: test
+threshold: 0.5
+train_metrics:
+- roc_auc
+- accuracy
+- pr_auc
+train_split: train
+transformers: []
+use_cuda: true
+validation_split: validation
+visualizer: null
