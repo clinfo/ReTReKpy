@@ -37,6 +37,8 @@ git clone https://github.com/elix-tech/kmol.git
 
 cd kmol
 
+git checkout tags/v1.1.9.3
+
 make build-docker
 
 cd /.../ReTReKpy
