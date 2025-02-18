@@ -1,4 +1,4 @@
-FROM elix-kmol:1.1.9.1
+FROM elix-kmol:1.1.9.3
 
 RUN echo "conda activate kmol" >> ~/.bashrc
 
